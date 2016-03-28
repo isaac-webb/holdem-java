@@ -2,3 +2,5 @@ out/
 .idea/
 *.iml
 src/META-INF
+GoFishGame.java
+GoFishHand.java

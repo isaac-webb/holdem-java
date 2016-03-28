@@ -14,9 +14,9 @@ public class HoldEmGame {
     private static ArrayList<HoldEmPlayer> holdEmPlayers;
 
     // Variables to track the state of a round
-    private static int pot;
-    private static int dealer;
-    private static int currentBet;
+    private static int pot; // Tracks the amount of money in the pot
+    private static int dealer; // Tracks the index of the dealer
+    private static int currentBet; // Tracks the current bet amount that must be called/raised
     private static HoldEmPlayer lastRaise;
     private static ArrayList<Card> tableCards;
 
@@ -125,8 +125,8 @@ public class HoldEmGame {
 
         // Get all of the hands and compare them
         ArrayList<int[]> hands = new ArrayList<>();
-        for (int p = 0; p < holdEmPlayers.size(); p++) {
-            hands.add(holdEmPlayers.get(p).handRank(tableCards));
+        for (HoldEmPlayer player : holdEmPlayers) {
+            hands.add(player.handRank(tableCards));
         }
 
         // Create variables to store winners and the highest hand
@@ -173,7 +173,7 @@ public class HoldEmGame {
 
         // If there is one player left, then tell 'em!
         if (holdEmPlayers.size() == 1) {
-            System.out.println(holdEmPlayers.get(0).playerName + " won with $" + holdEmPlayers.get(0).getStack() + "!");
+            System.out.println(holdEmPlayers.get(0).playerName + " won with " + holdEmPlayers.get(0).getStack() + "!");
             System.exit(0);
         }
 
@@ -194,10 +194,12 @@ public class HoldEmGame {
 
     // Loops through players and determines what to ask based on the game situation
     private static void collectBets() {
+        // Start with the player right after the dealer
+        boolean checkOccurred = false;
         int p = 1;
         currentBet = 0;
         lastRaise = holdEmPlayers.get((p + dealer) % holdEmPlayers.size());
-        boolean checkOccurred = false;
+
         while (true) {
             // Exit this method if all other players have folded
             if (playersLeft() == 1) break;
@@ -219,13 +221,17 @@ public class HoldEmGame {
                         askPlayerCheck(player);
                         pot += player.getPlayerBet();
                         player.collectPlayerBet();
-                        checkOccurred = true;
                     }
                 }
             } else break;
+
+            // Flag the one-time bypass of the loop for initial checks
+            checkOccurred = true;
             p++;
             clearScreen();
         }
+
+        // Reset the player bets
         for (HoldEmPlayer player : holdEmPlayers) {
             player.setPlayerBet(0);
         }
@@ -279,6 +285,7 @@ public class HoldEmGame {
             } catch (NumberFormatException e) {
                 System.out.print("Please enter a valid bet: ");
                 raiseTo = 0;
+                continue;
             }
             if (raiseTo <= currentBet || raiseTo > player.getStack()) {
                 System.out.print("Please enter a valid bet: ");
@@ -344,6 +351,7 @@ public class HoldEmGame {
         }
     }
 
+    // Returns the number of players who are not folded
     private static int playersLeft() {
         int cnt = 0;
         for (HoldEmPlayer p : holdEmPlayers) {

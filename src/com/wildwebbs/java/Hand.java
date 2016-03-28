@@ -35,16 +35,13 @@ public class Hand {
     // Method to put the cards in order
     private void organizeHand() {
         // Create a new array to store the organized hand
-        int index = 0;
         ArrayList<Card> organizedCards = new ArrayList<>();
 
         // Go through each card rank, in order, and populate the new array
         for (int i = 0; i <= 12; i++) {
             ArrayList<Card> matches = getCardsOfValue(i);
             if (matches != null) {
-                for (Card card : matches) {
-                    organizedCards.add(card);
-                }
+                organizedCards.addAll(matches);
             }
         }
         cards = organizedCards;
@@ -75,16 +72,6 @@ public class Hand {
         } else {
             return null;
         }
-    }
-
-    // Remove a card from the hand
-    public boolean removeCard(Card c) {
-        return cards.remove(c);
-    }
-
-    // Remove an array of cards
-    public boolean removeCards(ArrayList<Card> c) {
-        return cards.removeAll(c);
     }
 
     // Returns the number of cards with the input value

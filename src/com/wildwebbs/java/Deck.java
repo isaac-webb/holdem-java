@@ -26,14 +26,8 @@ public class Deck {
         shuffleDeck();
     }
 
-    // Simple initializer that allows inputting the array
-    public Deck(ArrayList<Card> cards) {
-        cardDeck = cards;
-        shuffleDeck();
-    }
-
     // Simple initializer that creates an empty array with size of the input size
-    public Deck(int size) {
+    private Deck(int size) {
         cardDeck = new ArrayList<>(size);
     }
 
@@ -58,18 +52,6 @@ public class Deck {
         }
     }
 
-    // Removes one card if there is a card that matches the arguments
-//    public boolean removeCard(int s, int v) {
-//        // NOTE: This remove only the first found card that matches the arguments
-//        for (int i = 0; i < cardDeck.size(); i++) {
-//            if (cardDeck.get(i).getValue() == v && cardDeck.get(i).getSuit() == s) {
-//                cardDeck.remove(i);
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     // Draw n cards from the deck and return null if there were not enough cards left
     public ArrayList<Card> drawCards(int n) {
         // Create an array of drawn cards
@@ -85,7 +67,7 @@ public class Deck {
     }
 
     // Merge two decks (shuffles as well)
-    public void mergeDeck(Deck d) {
+    private void mergeDeck(Deck d) {
         Card card;
         while ((card = d.drawCard()) != null) cardDeck.add(card);
     }
@@ -94,5 +76,4 @@ public class Deck {
     public int getCardDeckCount() {
         return cardDeck.size();
     }
-
 }

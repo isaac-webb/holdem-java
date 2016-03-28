@@ -161,7 +161,7 @@ public class HoldEmHand extends Hand {
     }
 
     // Looks for a straight, returns the value of the first card in the straight or -1 if there is no straight
-    public int containsStraight() {
+    private int containsStraight() {
         // Go through each possible straight
         startLoop:
         for (int i = 0; i <= 9; i++) {
@@ -174,7 +174,7 @@ public class HoldEmHand extends Hand {
     }
 
     // Returns, you guessed it, the highest card in the hand
-    public int highCard() {
+    private int highCard() {
         for (int i = 12; i >= 0; i--) {
             if (numberOf(i) > 0) return i;
         }
