@@ -2,6 +2,7 @@ package com.wildwebbs.java;
 
 import java.io.Console;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by iwebb on 3/10/16.
@@ -28,7 +29,7 @@ public class HoldEmGame {
         }
 
         // Print the welcome message and get the number of players
-        System.out.print("Welcome to Texas Hold 'Em! How many players will there be today (2-4)? ");
+        System.out.print("Welcome to Texas Hold 'Em! How many players will there be today (1-4)? ");
         int players = 0;
         while (players == 0) {
             try {
@@ -36,7 +37,7 @@ public class HoldEmGame {
             } catch (NumberFormatException e) {
                 System.out.print("Please enter a valid number of players: ");
             }
-            if (players > 4 || players < 2) {
+            if (players > 4 || players < 1) {
                 players = 0;
                 System.out.print("Please enter a valid number of players: ");
             }
@@ -47,6 +48,11 @@ public class HoldEmGame {
         for (int i = 0; i < players; i++) {
             System.out.print("Please enter a name for player " + (i + 1) + ": ");
             holdEmPlayers.add(new HoldEmPlayer(console.readLine()));
+            holdEmPlayers.get(i).isAI = false;
+        }
+        for (int i = players; i < 4; i++) {
+            holdEmPlayers.add(new HoldEmPlayer("Player " + (i + 1)));
+            holdEmPlayers.get(i).isAI = true;
         }
         clearScreen();
 
@@ -213,15 +219,19 @@ public class HoldEmGame {
                 // Make sure the player is able to go
                 if (!player.folded && player.getStack() > 0) {
                     // Present the appropriate options for the players
-                    if (currentBet > 0) {
-                        askPlayerCall(player);
-                        pot += player.getPlayerBet();
-                        player.collectPlayerBet();
+                    if (!player.isAI) {
+                        if (currentBet > 0) {
+                            askPlayerCall(player);
+                        } else {
+                            askPlayerCheck(player);
+                        }
                     } else {
-                        askPlayerCheck(player);
-                        pot += player.getPlayerBet();
-                        player.collectPlayerBet();
+                        playAI(player);
                     }
+
+                    // Add in the bet and make sure it is subtracted from the stack
+                    pot += player.getPlayerBet();
+                    player.collectPlayerBet();
                 }
             } else break;
 
@@ -237,6 +247,47 @@ public class HoldEmGame {
         }
     }
 
+    // Play a turn for a computer player
+    private static void playAI(HoldEmPlayer ai) {
+        // Create a random number generator
+        Random random = new Random();
+
+        // Decide whether the calling or checking subroutine is appropriate
+        if (currentBet > 0) {
+            // 1/20 chance of raising
+            // 7/20 chance of calling
+            // 12/20 chance of folding
+            int choice = random.nextInt(20);
+            if (choice > 7) {
+                ai.folded = true;
+            } else if (choice > 0 || ai.getStack() <= currentBet) {
+                callWithPlayer(ai);
+            } else {
+                // Set the raise amount to a random multiple of 10 between 1 and 500, bounded by stack
+                int raise = (random.nextInt(500) + 1) % ai.getStack();
+
+                // Raise the bet and update all of the necessary state variables
+                currentBet += raise;
+                lastRaise = ai;
+                ai.setPlayerBet(currentBet);
+            }
+        } else {
+            // 19/20 chance of checking
+            // 1/20 chance of raising
+            int choice = random.nextInt(20);
+            if (choice == 0) {
+                // Set the raise amount to a random multiple of 10 between the current bet and the AI's stack
+                int raise = random.nextInt(ai.getStack() - currentBet) + 1;
+                raise = raise / 10 * 10;
+
+                // Raise the bet and update all of the necessary state variables
+                currentBet += raise;
+                lastRaise = ai;
+                ai.setPlayerBet(currentBet);
+            }
+        }
+    }
+
     // Asks player to fold, check, or raise, and returns the amount that they bet
     private static void askPlayerCheck(HoldEmPlayer player) {
         // Print all necessary information for the user
@@ -245,18 +296,18 @@ public class HoldEmGame {
         System.out.println(player.playerName);
         System.out.println("Stack: " + player.getStack() + ", Pot: " + pot);
         System.out.println(player.printHand());
-        System.out.print("Would you like to fold, check, or raise? ");
+        System.out.print("Would you like to (f)old, (c)heck, or (r)aise? ");
 
         // Get the operation that the user would like to perform
         String operation;
         while (true) {
             operation = console.readLine();
-            if (operation.equalsIgnoreCase("fold")) {
+            if (operation.equalsIgnoreCase("fold") || operation.equalsIgnoreCase("f")) {
                 player.folded = true;
                 break;
-            } else if (operation.equalsIgnoreCase("check")) {
+            } else if (operation.equalsIgnoreCase("check") || operation.equalsIgnoreCase("c")) {
                 break;
-            } else if (operation.equalsIgnoreCase("raise")) {
+            } else if (operation.equalsIgnoreCase("raise") || operation.equalsIgnoreCase("r")) {
                 if (player.getStack() <= currentBet) {
                     System.out.print("You don't have enough to raise! Enter another operation: ");
                     continue;
@@ -299,6 +350,16 @@ public class HoldEmGame {
         player.setPlayerBet(raiseTo);
     }
 
+    private static void callWithPlayer(HoldEmPlayer player) {
+        // Adjust the pot and the player's stack to ensure correct updating
+        player.addToStack(player.getPlayerBet());
+        pot -= player.getPlayerBet();
+
+        // Make sure the player isn't betting more than they have
+        if (player.getStack() < currentBet) player.setPlayerBet(player.getStack());
+        else player.setPlayerBet(currentBet);
+    }
+
     // Asks player to fold, call, or raise, and returns the amount that they bet
     private static void askPlayerCall(HoldEmPlayer player) {
         // Print all necessary information for the user
@@ -307,25 +368,19 @@ public class HoldEmGame {
         System.out.println(player.playerName);
         System.out.println("Stack: " + player.getStack() + ", Your Bet: " + player.getPlayerBet() + ", Current Bet: " + currentBet + ", Pot: " + pot);
         System.out.println(player.printHand());
-        System.out.print("Would you like to fold, call, or raise? ");
+        System.out.print("Would you like to (f)old, (c)all, or (r)aise? ");
 
         // Get the operation that the user would like to perform
         String operation;
         while (true) {
             operation = console.readLine();
-            if (operation.equalsIgnoreCase("fold")) {
+            if (operation.equalsIgnoreCase("fold") || operation.equalsIgnoreCase("f")) {
                 player.folded = true;
                 break;
-            } else if (operation.equalsIgnoreCase("call")) {
-                // Adjust the pot and the player's stack to ensure correct updating
-                player.addToStack(player.getPlayerBet());
-                pot -= player.getPlayerBet();
-
-                // Make sure the player isn't betting more than they have
-                if (player.getStack() < currentBet) player.setPlayerBet(player.getStack());
-                else player.setPlayerBet(currentBet);
+            } else if (operation.equalsIgnoreCase("call") || operation.equalsIgnoreCase("c")) {
+                callWithPlayer(player);
                 break;
-            } else if (operation.equalsIgnoreCase("raise")) {
+            } else if (operation.equalsIgnoreCase("raise") || operation.equalsIgnoreCase("r")) {
                 if (player.getStack() <= currentBet) {
                     System.out.print("You don't have enough to raise! Enter another operation: ");
                     continue;
@@ -359,4 +414,5 @@ public class HoldEmGame {
         }
         return cnt;
     }
+    // TODO: Print out other players' statuses during the turn
 }

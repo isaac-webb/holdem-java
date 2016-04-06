@@ -11,6 +11,7 @@ public class HoldEmPlayer {
     private int playerBet; // Stores how much money the player is going to bet on their hand
     public String playerName; // Stores the name of the player
     public boolean folded;
+    public boolean isAI;
     private HoldEmHand hand; // Stores the player's hand
 
     // Standard initializer that simply takes the player's name
