@@ -29,6 +29,7 @@ public class Deck {
                 PlayingCard playingCard = null;
                 try {
                     playingCard = new PlayingCard(v, s);
+                    cardDeck.add(playingCard);
                 } catch (InvalidPlayingCardException e) {
                     e.printStackTrace();
                 }
