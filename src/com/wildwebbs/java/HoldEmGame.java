@@ -264,7 +264,7 @@ public class HoldEmGame {
                 callWithPlayer(ai);
             } else {
                 // Set the raise amount to a random multiple of 10 between 1 and 500, bounded by stack
-                int raise = (random.nextInt(500) + 1) % ai.getStack();
+                int raise = ((random.nextInt(500) + 1) % ai.getStack()) / 10 * 10;
 
                 // Raise the bet and update all of the necessary state variables
                 currentBet += raise;
@@ -326,7 +326,7 @@ public class HoldEmGame {
         pot -= player.getPlayerBet();
         player.addToStack(player.getPlayerBet());
 
-        System.out.print("What would you like to raise to? ");
+        System.out.print("What would you like to raise to (multiples of 10)? ");
         int raiseTo = 0;
 
         // Get a bet and make sure it is both larger than the current bet and less than or equal to the player's money
@@ -345,9 +345,9 @@ public class HoldEmGame {
         }
 
         // Update the player's bet and the current bet
-        currentBet = raiseTo;
+        currentBet = raiseTo / 10 * 10;
         lastRaise = player;
-        player.setPlayerBet(raiseTo);
+        player.setPlayerBet(currentBet);
     }
 
     private static void callWithPlayer(HoldEmPlayer player) {
