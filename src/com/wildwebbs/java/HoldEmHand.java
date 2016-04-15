@@ -3,14 +3,26 @@ package com.wildwebbs.java;
 import java.util.ArrayList;
 
 /**
- * Created by iwebb on 3/14/16.
+ * HoldEmHand is a Hand specific to the game of Texas Hold 'Em. It represents the two card hand that a player has during the game and contains methods to deal with hand ranks.
+ *
+ * @author Isaac Webb
+ * @version 1.1
+ * @since 2016-04-12
  */
 public class HoldEmHand extends Hand {
+    /**
+     * Creates a new HoldEmHand with a given array of initial Cards
+     * @param initialCards The Cards that the Hand should contain
+     */
     public HoldEmHand(ArrayList<Card> initialCards) {
         super(initialCards);
     }
 
-    // Iterates all possible combinations of cards using table cards and returns the highest hand
+    /**
+     * Returns the rank of the hand when combined with the community cards. The array is employed when comparing hands and allows comparison of hands based on more than just pure rank 0-9. The meanings of the values change based on the hand rank.
+     * @param tableCards The community cards for the round
+     * @return The rank of the hand: [0] = overall rank, [1] = value of 1st match/straight/flush/high card, [2] = value of 2nd match/high card, [3] = value of high card
+     */
     public int[] handRank(ArrayList<Card> tableCards) {
         // Will store the array for the best hand
         int[] max = new int[4];
@@ -64,13 +76,12 @@ public class HoldEmHand extends Hand {
         return max;
     }
 
-    // 0 - High Card, 1 - Pair, 2 - Two Pairs, 3 - Three of a Kind, 4 - Straight, 5 - Flush, 6 - Full House, 7 - Four of a Kind, 8 - Straight Flush, 9 - Royal Flush
-    // Returns an array that contains information about the hand
-    // [0] = rank of the hand
-    // [1] = value of 1st match/straight/flush/high card
-    // [2] = value of 2nd match/high card
-    // [3] = value of high card
-    private int[] determineHandRank(ArrayList<Card> handCards) {
+    /**
+     * Returns the rank information for the given hand. 0 - High Card, 1 - Pair, 2 - Two Pairs, 3 - Three of a Kind, 4 - Straight, 5 - Flush, 6 - Full House, 7 - Four of a Kind, 8 - Straight Flush, 9 - Royal Flush.
+     * @param handCards The 5-card hand that should be evaluated
+     * @return The rank of the hand: [0] = overall rank, [1] = value of 1st match/straight/flush/high card, [2] = value of 2nd match/high card, [3] = value of high card
+     */
+    private static int[] determineHandRank(ArrayList<Card> handCards) {
         HoldEmHand hand = new HoldEmHand(handCards);
         if (hand.getCardCount() != 5) {
             System.out.println("Please make sure you have five cards!");
@@ -160,7 +171,10 @@ public class HoldEmHand extends Hand {
         return rankInfo;
     }
 
-    // Looks for a straight, returns the value of the first card in the straight or -1 if there is no straight
+    /**
+     * Looks to see if the current hand contains a straight and, if it does, returns the value of the first card in the straight.
+     * @return The value of the first card in the straight or -1 if no straight exists
+     */
     private int containsStraight() {
         // Go through each possible straight
         startLoop:
@@ -173,7 +187,10 @@ public class HoldEmHand extends Hand {
         return -1;
     }
 
-    // Returns, you guessed it, the highest card in the hand
+    /**
+     * Finds and returns the value of the highest card in the hand.
+     * @return The value of the highest card
+     */
     private int highCard() {
         for (int i = 12; i >= 0; i--) {
             if (numberOf(i) > 0) return i;
@@ -181,7 +198,10 @@ public class HoldEmHand extends Hand {
         return -1;
     }
 
-    // Do a check to make sure the card being added is valid
+    /**
+     * Adds a card into the hand, checking to make sure that the card is a proper playing card.
+     * @param card The Card to be added into the Hand
+     */
     @Override
     public void addCard(Card card) {
         if (card.getValue() >= 0 && card.getValue() <= 12 && card.getSuit() >= 0 && card.getSuit() <= 3) {

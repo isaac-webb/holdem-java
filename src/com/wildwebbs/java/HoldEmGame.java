@@ -126,7 +126,7 @@ public class HoldEmGame {
         System.out.println(printTableCards() + "\n");
         for (HoldEmPlayer p : holdEmPlayers) {
             System.out.println(p.playerName + " " + (p.folded ? "Folded":""));
-            System.out.println(p.printHand());
+            System.out.println(p);
         }
 
         // Get all of the hands and compare them
@@ -295,7 +295,7 @@ public class HoldEmGame {
         System.out.println(printTableCards() + "\n");
         System.out.println(player.playerName);
         System.out.println("Stack: " + player.getStack() + ", Pot: " + pot);
-        System.out.println(player.printHand());
+        System.out.println(player);
         System.out.print("Would you like to (f)old, (c)heck, or (r)aise? ");
 
         // Get the operation that the user would like to perform
@@ -367,7 +367,7 @@ public class HoldEmGame {
         System.out.println(printTableCards() + "\n");
         System.out.println(player.playerName);
         System.out.println("Stack: " + player.getStack() + ", Your Bet: " + player.getPlayerBet() + ", Current Bet: " + currentBet + ", Pot: " + pot);
-        System.out.println(player.printHand());
+        System.out.println(player);
         System.out.print("Would you like to (f)old, (c)all, or (r)aise? ");
 
         // Get the operation that the user would like to perform
@@ -398,7 +398,7 @@ public class HoldEmGame {
         if (tableCards.size() > 0) {
             String str = "";
             for (Card c : tableCards) {
-                str += c.print() + " ";
+                str += c + " ";
             }
             return str;
         } else {

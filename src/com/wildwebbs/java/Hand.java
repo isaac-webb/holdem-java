@@ -3,36 +3,55 @@ package com.wildwebbs.java;
 import java.util.ArrayList;
 
 /**
- * Created by iwebb on 2/16/16.
+ * Hand is a class that represents a typical hand of cards. It differs from a Deck in that it can contain pattern matching and is able to be printed.
+ *
+ * @author Isaac Webb
+ * @version 1.1
+ * @since 2016-04-12
  */
 public class Hand {
+    /**
+     * An ArrayList that stores the Cards contained in the Hand
+     */
     private ArrayList<Card> cards;
 
-    // Simple initializer that takes an array to start with
+    /**
+     * Creates a new Hand with the Cards in the given ArrayList
+     * @param initialCards The Cards that the Hand should contain
+     */
     public Hand(ArrayList<Card> initialCards) {
         cards = new ArrayList<>();
         addCards(initialCards);
         organizeHand();
     }
 
-    // Create a nice visual representation of the hand
-    public String printHand() {
+    /**
+     * Returns a nice visual representation of the Hand by concatenating all of the Cards' String descriptions
+     * @return A String containing a visual of the Cards in the Hand
+     */
+    @Override
+    public String toString() {
         String output = "";
 
         // Print out the hand
         for (Card card : cards) {
-            output += card.print() + " ";
+            output += card + " ";
         }
         return output;
     }
 
-    // Add a card to the end of the hand
+    /**
+     * Adds a Card into the Hand
+     * @param card The Card to be added into the Hand
+     */
     public void addCard(Card card) {
         cards.add(card);
         organizeHand();
     }
 
-    // Method to put the cards in order
+    /**
+     * Puts the Hand in order based upon value
+     */
     private void organizeHand() {
         // Create a new array to store the organized hand
         ArrayList<Card> organizedCards = new ArrayList<>();
@@ -47,14 +66,21 @@ public class Hand {
         cards = organizedCards;
     }
 
-    // Add multiple cards to the hand
+    /**
+     * Adds an ArrayList of Cards into the Hand
+     * @param newCards The ArrayList containing the Cards that will be added into the Hand
+     */
     public void addCards(ArrayList<Card> newCards) {
         for (Card card : newCards) {
             addCard(card);
         }
     }
 
-    // Return an array of all of the cards in the hand of value n, and remove them from the card array
+    /**
+     * Returns all of the Cards in the Hand with the given value and removes them from the ArrayList
+     * @param value The value of the Cards that should be removed and returned
+     * @return An ArrayList containing all of the Cards with the given value
+     */
     public ArrayList<Card> getCardsOfValue(int value) {
         int count = numberOf(value);
 
@@ -74,9 +100,12 @@ public class Hand {
         }
     }
 
-    // Returns the number of cards with the input value
+    /**
+     * Returns the number of Cards in the Hand with the given value
+     * @param value The value of the Cards that should be counted
+     * @return The number of Cards in the Hand with the given value
+     */
     public int numberOf(int value) {
-        // Count how many cards of the input value are in the hand
         int count = 0;
         for (Card card : cards) {
             if (card.getValue() == value) count++;
@@ -84,7 +113,11 @@ public class Hand {
         return count;
     }
 
-    // Returns the number of cards with the input suit
+    /**
+     * Returns the number of Cards in the Hand with the given suit
+     * @param suit The suit of the Cards that should be counted
+     * @return The number of Cards in the Hand with the given suit
+     */
     public int numberOfSuit(int suit) {
         int count = 0;
         for (Card card : cards) {
@@ -93,7 +126,11 @@ public class Hand {
         return count;
     }
 
-    // Returns whether or not the card exists in the hand
+    /**
+     * Checks to see whether or not a single Card with the given value exists in the Hand
+     * @param value The value that should be checked
+     * @return Whether or not the Hand contains a Card with a value of value
+     */
     public boolean contains(int value) {
         for (Card card : cards) {
             if (card.getValue() == value) return true;
@@ -101,7 +138,10 @@ public class Hand {
         return false;
     }
 
-    // Getters and setters
+    /**
+     * Returns the number of Cards that are contained in the ArrayList of the Hand
+     * @return The size of the ArrayList/number of Cards in the Hand
+     */
     public int getCardCount() {
         return cards.size();
     }
